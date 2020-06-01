@@ -1,4 +1,6 @@
 import socket
+import os
+import subprocess
 
 hostname = socket.gethostname()
 # print('hostname -<', hostname)
@@ -37,5 +39,22 @@ def get_ip_6():
 		s.close()
 	return ip_addr
 
+
+def pinger(ip_address):
+	results = []
+
+	with open(os.devnull, 'w') as DEVNULL:
+		try:
+			subprocess.check_call(['ping', '-c1', ip_address], stdout=DEVNULL)
+			results.append(ip_address)
+		except:
+			pass
+
+	if results:
+		return True
+	return False
+
+
 print('IPv4 address -<', get_ip_4())
 print('IPv6 address -<', get_ip_6())
+print(pinger(ip_address=get_ip_4()))
