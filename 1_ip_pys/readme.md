@@ -76,7 +76,7 @@ def get_ip_6():
 print(get_ip_6()) # 2001:0db8:0000:0000:0000:ff00:0042:7879
 ```
 
-## BSD socket interface
+## Can we list all the IP addresses connected to one particular network?
 
-Set of standard function calls that can be used in an application. BSD (Berkeley Software Distribution -< Unix OS developed and distributed by Computer Systems Research Group) allows programmers to add internet communication to their products. Client or Server architecture is mandatory for BSD sockets. TCP -< A host listens for incomming connection requests, send or receive.
+### Very well, we can list.
 
