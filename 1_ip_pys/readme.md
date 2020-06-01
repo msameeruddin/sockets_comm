@@ -103,7 +103,7 @@ False
 
 ## Can we list all the IP addresses connected to one particular network?
 
-### Very well.
+Very well.
 
 **Note** - The following method lists all `IPv4` addresses of the devices connected to a particluar network.
 
