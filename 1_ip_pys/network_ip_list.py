@@ -86,7 +86,6 @@ class IPListDevices(object):
 	def _map_host_ip_(self, host_list):
 		"""mapping method that returns a dictionary"""
 		hostnames = [hip[0] for hip in host_list]
-		ip_addrs = [hip[2] for hip in host_list]
 
 		ip_addrs = []
 		for hip in host_list:
