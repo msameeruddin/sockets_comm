@@ -27,16 +27,16 @@ First version of IP. Uses 32-bit address scheme allowing to store 2^32 address >
 
 ```python
 def get_ip_4():
-	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	try:
-		s.connect(('www.google.com', 1))
-		ip_addr = s.getsockname()[0]
-	except Exception as e:
-		print(repr(e))
-		ip_addr = socket.gethostbyname(socket.gethostname())
-	finally:
-		s.close()
-	return ip_addr
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(('www.google.com', 1))
+	ip_addr = s.getsockname()[0]
+    except Exception as e:
+        print(repr(e))
+	ip_addr = socket.gethostbyname(socket.gethostname())
+    finally:
+        s.close()
+    return ip_addr
 print(get_ip_4()) # 12.244.233.165
 ```
 
@@ -50,29 +50,30 @@ This new version is been deployed to fulfill the need for more internet addresse
 >>> address_info = socket.getaddrinfo(host=socket.gethostname(), port='0000')
 >>> address_info
 [
-	(<AddressFamily.AF_INET6: 10>, <SocketKind.SOCK_STREAM: 1>, 6, '', ('::1', 0, 0, 0)),
-	(<AddressFamily.AF_INET6: 10>, <SocketKind.SOCK_DGRAM: 2>, 17, '', ('::1', 0, 0, 0)),
-	(<AddressFamily.AF_INET6: 10>, <SocketKind.SOCK_RAW: 3>, 0, '', ('::1', 0, 0, 0)),
-	(<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_STREAM: 1>, 6, '', ('127.0.0.1', 0)),
-	(<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_DGRAM: 2>, 17, '', ('127.0.0.1', 0)),
-	(<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_RAW: 3>, 0, '', ('127.0.0.1', 0)),
+    (<AddressFamily.AF_INET6: 10>, <SocketKind.SOCK_STREAM: 1>, 6, '', ('::1', 0, 0, 0)),
+    (<AddressFamily.AF_INET6: 10>, <SocketKind.SOCK_DGRAM: 2>, 17, '', ('::1', 0, 0, 0)),
+    (<AddressFamily.AF_INET6: 10>, <SocketKind.SOCK_RAW: 3>, 0, '', ('::1', 0, 0, 0)),
+    (<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_STREAM: 1>, 6, '', ('127.0.0.1', 0)),
+    (<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_DGRAM: 2>, 17, '', ('127.0.0.1', 0)),
+    (<AddressFamily.AF_INET: 2>, <SocketKind.SOCK_RAW: 3>, 0, '', ('127.0.0.1', 0)),
 ]
 ```
 
 ```python
 def get_ip_6():
-	s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-	try:
-		s.connect(('www.google.com', 1))
-		ip_addr = s.getsockname()[0]
-	except Exception as e:
-		print(repr(e))
-		alladdr = socket.getaddrinfo(host=socket.gethostname(), port='0000')
-		ip6 = filter(lambda x: x[0] == socket.AF_INET6, alladdr)
-		ip_addr = list(ip6)[0][4][0]
-	finally:
-		s.close()
-	return ip_addr
+    s = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+    
+    try:
+        s.connect(('www.google.com', 1))
+	ip_addr = s.getsockname()[0]
+    except Exception as e:
+        print(repr(e))
+	alladdr = socket.getaddrinfo(host=socket.gethostname(), port='0000')
+	ip6 = filter(lambda x: x[0] == socket.AF_INET6, alladdr)
+	ip_addr = list(ip6)[0][4][0]
+    finally:
+        s.close()
+    return ip_addr
 print(get_ip_6()) # 2001:0db8:0000:0000:0000:ff00:0042:7879
 ```
 
@@ -80,18 +81,18 @@ In order to check if the IP address is valid or not, it is recommended to use `p
 
 ```python
 def pinger(ip_address):
-	results = []
+    results = []
+    
+    with open(os.devnull, 'w') as DEVNULL:
+        try:
+            subprocess.check_call(['ping', '-c1', ip_address], stdout=DEVNULL)
+            results.append(ip_address)
+        except:
+            pass
 
-	with open(os.devnull, 'w') as DEVNULL:
-		try:
-			subprocess.check_call(['ping', '-c1', ip_address], stdout=DEVNULL)
-			results.append(ip_address)
-		except:
-			pass
-
-	if results:
-		return True
-	return False
+    if results:
+        return True
+    return False
 ```
 
 ```python
@@ -109,12 +110,12 @@ Very well.
 
 ```python
 def get_my_ip():
-	## AF_NET is used for getting IPv4
-	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	s.connect(("8.8.8.8", 80))
-	ip = s.getsockname()[0]
-	s.close()
-	return ip
+    ## AF_NET is used for getting IPv4
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    ip = s.getsockname()[0]
+    s.close()
+    return ip
 ```
 
 This will return the working device IPv4 address. It is needed to map all the devices of a particlular network.
@@ -137,22 +138,22 @@ import os
 import subprocess
 
 def pinger(job_q, results_q):
-	"""
-	Used for pinging
-	:param job_q: queue
-	:param results_q: queue
-	:return:
-	"""
-	with open(os.devnull, 'w') as DEVNULL:
-		while True:
-			ip = job_q.get()
-			if ip is None:
-				break
-			try:
-				subprocess.check_call(['ping', '-c1', ip], stdout=DEVNULL)
-				results_q.put(ip)
-			except:
-				pass
+    """
+    Used for pinging
+    :param job_q: queue
+    :param results_q: queue
+    :return:
+    """
+    with open(os.devnull, 'w') as DEVNULL:
+        while True:
+            ip = job_q.get()
+            if ip is None:
+                break
+            try:
+                subprocess.check_call(['ping', '-c1', ip], stdout=DEVNULL)
+                results_q.put(ip)
+            except:
+                pass
 ```
 
 The above method is used to check if the IP address is valid or not. The process is called pinging and it is used to check if a particular host is reachable. It sends data packet to a server and if it receives a data packet back, then you have a connection and this method is called as Internet Control Message Protocol (ICMP).
@@ -161,46 +162,46 @@ The above method is used to check if the IP address is valid or not. The process
 import multiprocessing
 
 def map_network(pool_size=255):
-	"""
-	Maps the network
-	:param pool_size: amount of parallel ping processes
-	:return: list of valid ip addresses
-	"""
-	ip_list = []
+    """
+    Maps the network
+    :param pool_size: amount of parallel ping processes
+    :return: list of valid ip addresses
+    """
+    ip_list = []
 
-	# get my IP and compose a base like 192.168.1.xxx
-	ip_parts = get_my_ip().split('.')
-	_ = ip_parts.pop()
-	base_ip = '.'.join(ip_parts) + '.'
+    # get my IP and compose a base like 192.168.1.xxx
+    ip_parts = get_my_ip().split('.')
+    _ = ip_parts.pop()
+    base_ip = '.'.join(ip_parts) + '.'
 
-	# prepare the jobs queue
-	jobs = multiprocessing.Queue()
-	results = multiprocessing.Queue()
+    # prepare the jobs queue
+    jobs = multiprocessing.Queue()
+    results = multiprocessing.Queue()
 
-	pool = [
-		multiprocessing.Process(target=pinger, args=(jobs, results)) for i in range(pool_size)
-	]
+    pool = [
+        multiprocessing.Process(target=pinger, args=(jobs, results)) for i in range(pool_size)
+    ]
 
-	for p in pool:
-		p.start()
+    for p in pool:
+        p.start()
 
-	# cut the ping processes
-	for i in range(1, pool_size):
-		jobs.put(base_ip + '{}'.format(i))
+    # cut the ping processes
+    for i in range(1, pool_size):
+        jobs.put(base_ip + '{}'.format(i))
 
-	for p in pool:
-		jobs.put(None)
+    for p in pool:
+        jobs.put(None)
 
-	## takes a bit of time
-	for p in pool:
-		p.join()
+    ## takes a bit of time
+    for p in pool:
+        p.join()
 
-	# collect the results
-	while not results.empty():
-		ip = results.get()
-		ip_list.append(ip)
+    # collect the results
+    while not results.empty():
+        ip = results.get()
+        ip_list.append(ip)
 
-	return ip_list
+    return ip_list
 ```
 
 Two multiprocessing queues are being used to hold the list of IP addresses shown within the network that is connected. It follows parallel ping process (used to check if the multiple hosts are up or down). It returns a list of addresses connected to a single network.
